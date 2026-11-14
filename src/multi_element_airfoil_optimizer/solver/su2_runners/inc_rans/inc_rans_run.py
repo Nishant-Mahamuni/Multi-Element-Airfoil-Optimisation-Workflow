@@ -60,7 +60,15 @@ def su2_inc_rans_run(args: argparse.Namespace) -> None:
             flush=True,
         )
 
-        result = subprocess.run(["SU2_CFD", str(cfg_path)], cwd=tmp)
+        su2_cfd = shutil.which("SU2_CFD")
+        if su2_cfd is None:
+            raise FileNotFoundError(
+                "SU2_CFD executable not found on PATH.\n"
+                "Install SU2 and add its 'bin' directory to PATH, then open a "
+                "new terminal so the updated PATH is picked up.",
+            )
+
+        result = subprocess.run([su2_cfd, str(cfg_path)], cwd=tmp)
 
         if result.returncode != 0:
             raise RuntimeError(f"SU2_CFD exited with code {result.returncode}.")
